@@ -1,0 +1,56 @@
+version '1.0-SNAPSHOT'
+apply plugin: "java"
+apply plugin: "idea"
+apply plugin: "net.serenity-bdd.aggregator"
+
+sourceCompatibility = 1.8
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+//        classpath "org.jfrog.buildinfo:build-infor-extractor-gradle:4+"
+        classpath "net.serenity-bdd:serenity-gradle-plugin:${serenity_cucumber_version}"
+        classpath "net.serenity-bdd:serenity-jira-plugin:${serenity_jira_version}"
+        classpath "net.serenity-bdd:serenity-single-page-report:${serenity_version}"
+        classpath "net.serenity-bdd:serenity-jira-requirements-provider:${serenity_jira_version}"
+    }
+}
+
+serenity{
+    reports=["single-page-html"]
+}
+
+allprojects {
+
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "net.serenity-bdd:serenity-core:${serenity_version}"
+    compile "net.serenity-bdd:serenity-junit:${serenity_version}"
+    compile group: "net.serenity-bdd" ,name:"serenity-cucumber6",version:"${serenity_cucumber_version}"
+    compile "net.serenity-bdd:serenity-spring:${serenity_version}"
+    compile "net.serenity-bdd:serenity-gradle-plugin:${serenity_cucumber_version}"
+    compile group: "net.serenity-bdd" ,name:"serenity-report-resources",version:"${serenity_version}"
+//    compile group: "or.springframework" ,name:"spring-web",version:"5.0.4.RELEASE"
+    compile group: 'org.apache.poi', name: 'poi', version: '4.1.2'
+}
+
+
+gradle.startParameter.continueOnFailure = true
+test {
+    systemProperties System.properties
+
+    outputs.upToDateWhen { false }
+
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+}
