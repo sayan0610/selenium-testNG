@@ -59,6 +59,18 @@ jobs:
           export CI=true
           mvn clean test
 
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          mvn allure:report
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/site/allure-maven-plugin/
+
       - name: Stop test-platform server
         run: |
           pkill -f "npm start"
@@ -69,3 +81,8 @@ jobs:
         with:
           name: surefire-reports
           path: target/surefire-reports/
+      
+      - name: Print Allure Report Download Link
+        if: always()
+        run: |
+          echo "Download the Allure report from the workflow run's 'Artifacts' section: allure-report.zip"
