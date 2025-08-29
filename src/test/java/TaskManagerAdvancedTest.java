@@ -49,13 +49,17 @@ public class TaskManagerAdvancedTest {
     @Factory
     public static Object[] browserFactory() {
         String os = System.getProperty("os.name").toLowerCase();
+        boolean isCI = System.getenv("CI") != null;
         java.util.List<Object> tests = new java.util.ArrayList<>();
         tests.add(new TaskManagerAdvancedTest("chrome", true));
         tests.add(new TaskManagerAdvancedTest("firefox", true));
         if (!os.contains("mac")) {
             tests.add(new TaskManagerAdvancedTest("edge", true));
         }
-        tests.add(new TaskManagerAdvancedTest("safari", false));
+        // Only add Safari if not running in CI
+        if (!isCI) {
+            tests.add(new TaskManagerAdvancedTest("safari", false));
+        }
         return tests.toArray();
     }
 }

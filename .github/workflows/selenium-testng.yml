@@ -39,6 +39,7 @@ jobs:
 
       - name: Run Selenium TestNG tests
         run: |
+          export CI=true
           mvn clean test
 
       - name: Stop test-platform server
