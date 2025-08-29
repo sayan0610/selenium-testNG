@@ -2,7 +2,8 @@
 /build/
 /history
 /target
-/.idea
+test-platform/node_modules
+.DS_Store
 # Ignore Gradle GUI config
 gradle-app.setting
 
