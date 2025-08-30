@@ -11,6 +11,75 @@ import code.hooks.BrowserHooks;
 import java.util.List;
 
 public class StepDefinitions {
+    @When("the user views the details of the task {string}")
+    public void userViewsTaskDetails(String task) {
+        WebDriver driver = BrowserHooks.driver.get();
+        WebElement taskList = driver.findElement(By.id("task-list"));
+        for (WebElement item : taskList.findElements(By.tagName("li"))) {
+            if (item.getText().contains(task)) {
+                WebElement titleSpan = item.findElement(By.xpath(".//span[contains(text(), '" + task + "')]"));
+                titleSpan.click();
+                break;
+            }
+        }
+        try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+    }
+
+    @Then("the task details should be displayed")
+    public void taskDetailsShouldBeDisplayed() throws InterruptedException {
+        WebDriver driver = BrowserHooks.driver.get();
+        WebElement detailDiv = driver.findElement(By.id("task-detail-view"));
+        Thread.sleep(10000);
+        int retries = 10;
+        while (retries-- > 0 && !detailDiv.isDisplayed()) {
+            try { Thread.sleep(200); } catch (InterruptedException ignored) {}
+        }
+        assertThat(detailDiv.isDisplayed()).isTrue();
+        assertThat(detailDiv.getText()).contains("Task Details");
+    }
+    @When("the user has completed the task {string}")
+    public void userHasCompletedTask(String task) {
+        userAddsTask(task);
+        the_user_marks_the_task_as_completed(task);
+    }
+
+    @When("the user has an incomplete task {string}")
+    public void userHasIncompleteTask(String task) {
+        userAddsTask(task);
+    }
+
+    @When("the user filters to show only completed tasks")
+    public void userFiltersToShowOnlyCompletedTasks() {
+        WebDriver driver = BrowserHooks.driver.get();
+        WebElement completedBtn = driver.findElement(By.xpath("//button[contains(text(), 'Completed')]"));
+        completedBtn.click();
+        try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+    }
+    @When("the user adds tasks {string}, {string}, and {string}")
+    public void userAddsMultipleTasks(String t1, String t2, String t3) {
+        userAddsTask(t1);
+        userAddsTask(t2);
+        userAddsTask(t3);
+    }
+
+    @When("the user selects and deletes tasks {string} and {string}")
+    public void userBulkDeletesTasks(String t1, String t2) throws InterruptedException {
+        WebDriver driver = BrowserHooks.driver.get();
+        WebElement taskList = driver.findElement(By.id("task-list"));
+        // Select checkboxes for t1 and t2
+        for (WebElement item : taskList.findElements(By.tagName("li"))) {
+            if (item.getText().contains(t1) || item.getText().contains(t2)) {
+                WebElement checkbox = item.findElement(By.cssSelector("input[type='checkbox'].bulk-checkbox"));
+                if (!checkbox.isSelected()) {
+                    checkbox.click();
+                }
+            }
+        }
+        // Click Bulk Delete button
+        WebElement bulkDeleteBtn = driver.findElement(By.xpath("//button[contains(text(), 'Bulk Delete')]"));
+        bulkDeleteBtn.click();
+        try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+    }
     @When("the user edits the task {string} to {string}")
     public void userEditsTask(String oldName, String newName) throws InterruptedException {
         WebDriver driver = BrowserHooks.driver.get();
@@ -129,20 +198,12 @@ public class StepDefinitions {
         assertThat(taskList.getText()).contains(task);
     }
 
-    @When("the user deletes the task {string}")
-    public void userDeletesTask(String task) {
+    @When("the user deletes the task {string} using the delete icon")
+    public void userDeletesTaskUsingIcon(String task) throws InterruptedException {
         WebDriver driver = BrowserHooks.driver.get();
-        WebElement taskList = driver.findElement(By.id("task-list"));
-        for (WebElement item : taskList.findElements(By.tagName("li"))) {
-            if (item.getText().contains(task)) {
-                // Find the correct "Delete" button (usually the last button in the item)
-                List<WebElement> buttons = item.findElements(By.tagName("button"));
-                WebElement deleteBtn = buttons.get(buttons.size() - 1);
-                deleteBtn.click();
-                try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
-                break;
-            }
-        }
+        // Find the delete button by data-test-id
+        WebElement deleteButton = driver.findElement(By.xpath(".//span[contains(text(), '" + task + "')]//parent::td//following-sibling::td//button[@data-test-id=\"delete-task\"]"));
+        deleteButton.click();
     }
 
     @Then("the task list should not contain {string}")

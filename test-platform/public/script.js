@@ -33,25 +33,12 @@ function updateFilter() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('filter-all').addEventListener('change', function() {
-    if (this.checked) {
-      document.getElementById('filter-completed').checked = false;
-      document.getElementById('filter-incomplete').checked = false;
-    }
-    updateFilter();
-  });
-  document.getElementById('filter-completed').addEventListener('change', function() {
-    if (this.checked) {
-      document.getElementById('filter-all').checked = false;
-    }
-    updateFilter();
-  });
-  document.getElementById('filter-incomplete').addEventListener('change', function() {
-    if (this.checked) {
-      document.getElementById('filter-all').checked = false;
-    }
-    updateFilter();
-  });
+  const filterDropdown = document.getElementById('filter-dropdown');
+  if (filterDropdown) {
+    filterDropdown.addEventListener('change', function() {
+      window.filterTasks(this.value);
+    });
+  }
 });
 
 window.bulkDeleteSelected = async function() {
@@ -113,19 +100,55 @@ async function fetchTasks() {
   filteredTasks.forEach((task) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
+      <td><input type="checkbox" class="bulk-checkbox" data-task-id="${task.id}" /></td>
       <td>
-        <span style="text-decoration: ${task.completed ? 'line-through' : 'none'}; color:#2563eb;">${task.title}</span>
+        <span style="text-decoration: ${task.completed ? 'line-through' : 'none'}; color:#2563eb; cursor:pointer;" id="task-title-${task.id}" onclick="toggleRowDetail(${task.id})">${task.title}</span>
+        <span id="edit-input-${task.id}" style="display:none;"></span>
       </td>
       <td><span class="status-badge ${task.completed ? 'status-completed' : 'status-inprogress'}">${task.completed ? 'Completed' : 'In-Progress'}</span></td>
-      <td>
+      <td style="vertical-align: top; text-align: center;">
         <div class="task-actions">
-          <button onclick="toggleTask(${task.id}, ${task.completed})">${task.completed ? 'Undo' : 'Complete'}</button>
-          <button onclick="deleteTask(${task.id})">Delete</button>
+          <button class="icon-btn" title="${task.completed ? 'Undo' : 'Complete'}" onclick="toggleTask(${task.id}, ${task.completed})">
+            ${task.completed ? '<span style="color:#2563eb;">&#8634;</span>' : '<span style="color:#38ef7d;">&#10003;</span>'}
+          </button>
+          <button class="icon-btn delete-btn" title="Delete" aria-label="Delete" data-test-id="delete-task" onclick="deleteTask(${task.id})">
+            <span style="color:#ef4444;">&#128465;</span>
+          </button>
+          <button class="icon-btn" title="Rename" onclick="showEditInput(${task.id}, '${task.title.replace(/'/g, "\'")}')">
+            <span style="color:#2563eb;">&#9998;</span>
+          </button>
         </div>
       </td>
     `;
     taskList.appendChild(tr);
+    // Add expandable details row
+    const detailTr = document.createElement('tr');
+    detailTr.id = `detail-row-${task.id}`;
+    detailTr.style.display = 'none';
+    detailTr.innerHTML = `<td colspan="4" style="background:rgba(245,250,255,0.7); padding:18px 32px; border-radius:0 0 14px 14px; color:#2563eb; font-size:1.08em;">${task.details ? `<strong>Details:</strong> ${task.details}` : '<em>No details provided.</em>'}</td>`;
+    taskList.appendChild(detailTr);
   });
+// Toggle details row for a task
+window.toggleRowDetail = function(id) {
+  const detailRow = document.getElementById(`detail-row-${id}`);
+  if (!detailRow) return;
+  detailRow.style.display = (detailRow.style.display === 'none' || detailRow.style.display === '') ? 'table-row' : 'none';
+}
+  // Select-all logic for table rows
+  const selectAll = document.getElementById('select-all-checkbox');
+  if (selectAll) {
+    selectAll.onclick = function() {
+      const checkboxes = document.querySelectorAll('.bulk-checkbox');
+      checkboxes.forEach(cb => { cb.checked = selectAll.checked; });
+    };
+    const checkboxes = document.querySelectorAll('.bulk-checkbox');
+    checkboxes.forEach(cb => {
+      cb.onchange = function() {
+        const allChecked = Array.from(document.querySelectorAll('.bulk-checkbox')).every(c => c.checked);
+        selectAll.checked = allChecked;
+      };
+    });
+  }
 
   // Show rename input for a task
 }

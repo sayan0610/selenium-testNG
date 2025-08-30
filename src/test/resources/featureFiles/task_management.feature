@@ -11,5 +11,5 @@ Feature: Task Management
   Scenario: Delete a task
     Given the user is on the Task Manager homepage
     And the user adds a new task "Delete Me"
-    When the user deletes the task "Delete Me"
+    When the user deletes the task "Delete Me" using the delete icon
     Then the task list should not contain "Delete Me"
