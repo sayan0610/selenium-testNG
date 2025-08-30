@@ -38,7 +38,7 @@ public class StepDefinitions {
         assertThat(detailDiv.getText()).contains("Task Details");
     }
     @When("the user has completed the task {string}")
-    public void userHasCompletedTask(String task) {
+    public void userHasCompletedTask(String task) throws InterruptedException {
         userAddsTask(task);
         the_user_marks_the_task_as_completed(task);
     }
@@ -111,52 +111,33 @@ public class StepDefinitions {
         driver.navigate().refresh();
     }
     @When("the user marks the task {string} as completed")
-    public void the_user_marks_the_task_as_completed(String task) {
+    public void the_user_marks_the_task_as_completed(String task) throws InterruptedException {
         WebDriver driver = BrowserHooks.driver.get();
-        WebElement taskList = driver.findElement(By.id("task-list"));
-        for (WebElement item : taskList.findElements(By.tagName("li"))) {
-            if (item.getText().contains(task)) {
-                // Find the complete button (assume first button is complete)
-                List<WebElement> buttons = item.findElements(By.tagName("button"));
-                if (!buttons.isEmpty()) {
-                    WebElement completeBtn = buttons.get(0);
-                    completeBtn.click();
-                    try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
-                }
-                break;
-            }
-        }
+        WebElement completeButton = driver.findElement(By.xpath(".//span[contains(text(), '" + task + "')]//parent::td//following-sibling::td//button[@data-test-id=\"status\"]"));
+        completeButton.click();
     }
 
     @Then("the task {string} should be shown as completed")
     public void the_task_should_be_shown_as_completed(String task) {
         WebDriver driver = BrowserHooks.driver.get();
-        WebElement taskList = driver.findElement(By.id("task-list"));
+        WebElement taskTable = driver.findElement(By.id("task-list"));
         boolean found = false;
-        for (WebElement item : taskList.findElements(By.tagName("li"))) {
-            if (item.getText().contains(task)) {
-                // Check for completed class or style
-                String classAttr = item.getAttribute("class");
-                if (classAttr != null && classAttr.contains("completed")) {
-                    found = true;
-                    break;
-                }
-                // Alternatively, check for strikethrough style
-                String style = item.getAttribute("style");
-                if (style != null && style.contains("line-through")) {
-                    found = true;
-                    break;
-                }
-                // Try to get style from child elements if not found on <li>
-                List<WebElement> children = item.findElements(By.xpath(".//*"));
-                for (WebElement child : children) {
-                    String childStyle = child.getAttribute("style");
-                    if (childStyle != null && childStyle.contains("line-through")) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (found) break;
+        for (WebElement row : taskTable.findElements(By.tagName("tr"))) {
+            if (row.getText().contains(task)) {
+            // Check for completed status in the status column
+            WebElement statusBtn = row.findElement(By.xpath(".//button[@data-test-id='status']"));
+            String statusText = statusBtn.getText().toLowerCase();
+            if (statusText.contains("completed") || statusBtn.getAttribute("class").contains("completed")) {
+                found = true;
+                break;
+            }
+            // Optionally, check for strikethrough style in the task name cell
+            WebElement nameCell = row.findElement(By.xpath(".//span[contains(text(), '" + task + "')]"));
+            String style = nameCell.getAttribute("style");
+            if (style != null && style.contains("line-through")) {
+                found = true;
+                break;
+            }
             }
         }
         assertThat(found).isTrue();

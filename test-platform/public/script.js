@@ -108,7 +108,7 @@ async function fetchTasks() {
       <td><span class="status-badge ${task.completed ? 'status-completed' : 'status-inprogress'}">${task.completed ? 'Completed' : 'In-Progress'}</span></td>
       <td style="vertical-align: top; text-align: center;">
         <div class="task-actions">
-          <button class="icon-btn" title="${task.completed ? 'Undo' : 'Complete'}" onclick="toggleTask(${task.id}, ${task.completed})">
+          <button class="icon-btn" title="${task.completed ? 'Undo' : 'Complete'}"  data-test-id="status" onclick="toggleTask(${task.id}, ${task.completed})">
             ${task.completed ? '<span style="color:#2563eb;">&#8634;</span>' : '<span style="color:#38ef7d;">&#10003;</span>'}
           </button>
           <button class="icon-btn delete-btn" title="Delete" aria-label="Delete" data-test-id="delete-task" onclick="deleteTask(${task.id})">

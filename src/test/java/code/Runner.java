@@ -4,7 +4,7 @@ import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
 
 @CucumberOptions(
-    features = "src/test/resources/featureFiles/task_manager_home.feature",
+    features = "src/test/resources/featureFiles/complete_task.feature",
     glue = {"code", "code.stepdefinitions", "code.hooks"},
     plugin = {"pretty", "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm"},
     monochrome = true
