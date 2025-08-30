@@ -1,5 +1,8 @@
-package test.java;
+package code.hooks;
 
+import io.cucumber.java.Before;
+import io.cucumber.java.After;
+import io.qameta.allure.Allure;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -9,10 +12,20 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.safari.SafariDriver;
 
-public class BrowserManager {
-    private static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+public class BrowserHooks {
+    public static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
-    public static void initDriver(String browser, boolean headless) {
+    @Before
+    public void setUp() {
+        String os = System.getProperty("os.name").toLowerCase();
+        boolean isCI = System.getenv("CI") != null;
+        String browser = System.getProperty("browser", "chrome");
+        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "true"));
+
+        // Add browser label to Allure report
+        Allure.label("browser", browser);
+
+        // Factory logic: choose browsers based on OS/CI
         if ("chrome".equalsIgnoreCase(browser)) {
             ChromeOptions options = new ChromeOptions();
             if (headless) options.addArguments("--headless=new");
@@ -21,23 +34,19 @@ public class BrowserManager {
             FirefoxOptions options = new FirefoxOptions();
             if (headless) options.addArguments("-headless");
             driver.set(new FirefoxDriver(options));
-        } else if ("edge".equalsIgnoreCase(browser)) {
+        } else if ("edge".equalsIgnoreCase(browser) && !os.contains("mac")) {
             EdgeOptions options = new EdgeOptions();
             if (headless) options.addArguments("--headless=new");
             driver.set(new EdgeDriver(options));
-        } else if ("safari".equalsIgnoreCase(browser)) {
-            // Safari does not support headless mode
+        } else if ("safari".equalsIgnoreCase(browser) && !isCI) {
             driver.set(new SafariDriver());
         } else {
             throw new IllegalArgumentException("Unsupported browser: " + browser);
         }
     }
 
-    public static WebDriver getDriver() {
-        return driver.get();
-    }
-
-    public static void quitDriver() {
+    @After
+    public void tearDown() {
         if (driver.get() != null) {
             driver.get().quit();
             driver.remove();

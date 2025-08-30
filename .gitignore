@@ -15,3 +15,39 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+
+# Allure results and reports
+allure-results/
+allure-report/
+
+# Selenium logs
+selenium-logs/
+
+# VS Code settings
+.vscode/
+
+# OS/IDE files
+.DS_Store
+.idea/
+
+# Node modules
+node_modules/
+
+# Java build output
+/build/
+/target/
+
+# Gradle
+.gradle
+
+# Test-platform
+/test-platform/node_modules
+
+# Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache

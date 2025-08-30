@@ -54,10 +54,11 @@ jobs:
           nohup npm start &
           sleep 8
 
-      - name: Run Selenium TestNG tests
+      - name: Run Selenium+Cucumber+TestNG tests in parallel for all browsers
         run: |
           export CI=true
-          mvn clean test
+          chmod +x run-all-browsers-parallel.sh
+          ./run-all-browsers-parallel.sh
 
       - name: Generate Allure Report
         if: always()
@@ -69,7 +70,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: target/site/allure-maven-plugin/
+          path: allure-report/
 
       - name: Stop test-platform server
         run: |

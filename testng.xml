@@ -3,38 +3,10 @@
 <suite name="ParallelSuite" parallel="classes" thread-count="8">
     <test name="TaskManagerTests">
         <classes>
-            <class name="TaskManagerAdvancedTest"/>
+            <class name="code.Runner"/>
         </classes>
     </test>
-    <!-- Uncomment and implement TestPlatformHomePageTest if available -->
-    <!--
-    <test name="PlatformHomeTests-Chrome">
-        <parameter name="browser" value="chrome"/>
-        <parameter name="headless" value="true"/>
-        <classes>
-            <class name="TestPlatformHomePageTest"/>
-        </classes>
-    </test>
-    <test name="PlatformHomeTests-Firefox">
-        <parameter name="browser" value="firefox"/>
-        <parameter name="headless" value="true"/>
-        <classes>
-            <class name="TestPlatformHomePageTest"/>
-        </classes>
-    </test>
-    <test name="PlatformHomeTests-Edge">
-        <parameter name="browser" value="edge"/>
-        <parameter name="headless" value="true"/>
-        <classes>
-            <class name="TestPlatformHomePageTest"/>
-        </classes>
-    </test>
-    <test name="PlatformHomeTests-Safari">
-        <parameter name="browser" value="safari"/>
-        <parameter name="headless" value="false"/>
-        <classes>
-            <class name="TestPlatformHomePageTest"/>
-        </classes>
-    </test>
-    -->
+    <listeners>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+    </listeners>
 </suite>
