@@ -37,12 +37,17 @@ app.post('/api/tasks', (req, res) => {
 // Update a task
 app.put('/api/tasks/:id', (req, res) => {
   const { id } = req.params;
-  const { completed } = req.body;
+  const { completed, title } = req.body;
   const task = tasks.find((t) => t.id === parseInt(id));
   if (!task) {
     return res.status(404).json({ error: 'Task not found' });
   }
-  task.completed = completed;
+  if (typeof completed !== 'undefined') {
+    task.completed = completed;
+  }
+  if (typeof title !== 'undefined') {
+    task.title = title;
+  }
   res.json(task);
 });
 
