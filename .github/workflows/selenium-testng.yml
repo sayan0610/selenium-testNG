@@ -48,12 +48,6 @@ jobs:
           cd test-platform
           npm install
 
-      - name: Start test-platform server
-        run: |
-          cd test-platform
-          nohup npm start &
-          sleep 8
-
       - name: Run Selenium+Cucumber+TestNG tests in parallel for all browsers
         run: |
           export CI=true
