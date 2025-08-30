@@ -48,6 +48,11 @@ jobs:
           cd test-platform
           npm install
 
+      - name: Install Allure CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y allure
+
       - name: Run Selenium+Cucumber+TestNG tests in parallel for all browsers
         run: |
           export CI=true
@@ -60,10 +65,6 @@ jobs:
         with:
           name: allure-report
           path: allure-report/
-
-      - name: Stop test-platform server
-        run: |
-          pkill -f "npm start"
 
       - name: Archive test reports
         if: always()
