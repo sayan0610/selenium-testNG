@@ -13,8 +13,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // In-memory database for tasks
 let tasks = [
-  { id: 1, title: 'Sample Task 1', completed: false },
-  { id: 2, title: 'Sample Task 2', completed: true },
+  { id: 1, title: 'Sample Task 1', completed: false, details: 'Example details' },
+  { id: 2, title: 'Sample Task 2', completed: true, details: 'Another example' },
 ];
 
 // Routes
@@ -25,11 +25,11 @@ app.get('/api/tasks', (req, res) => {
 
 // Add a new task
 app.post('/api/tasks', (req, res) => {
-  const { title } = req.body;
+  const { title, details } = req.body;
   if (!title) {
     return res.status(400).json({ error: 'Title is required' });
   }
-  const newTask = { id: tasks.length + 1, title, completed: false };
+  const newTask = { id: tasks.length + 1, title, completed: false, details: details || '' };
   tasks.push(newTask);
   res.status(201).json(newTask);
 });
@@ -37,7 +37,7 @@ app.post('/api/tasks', (req, res) => {
 // Update a task
 app.put('/api/tasks/:id', (req, res) => {
   const { id } = req.params;
-  const { completed, title } = req.body;
+  const { completed, title, details } = req.body;
   const task = tasks.find((t) => t.id === parseInt(id));
   if (!task) {
     return res.status(404).json({ error: 'Task not found' });
@@ -47,6 +47,19 @@ app.put('/api/tasks/:id', (req, res) => {
   }
   if (typeof title !== 'undefined') {
     task.title = title;
+  }
+  if (typeof details !== 'undefined') {
+    task.details = details;
+  }
+  res.json(task);
+});
+
+// Get a single task by id
+app.get('/api/tasks/:id', (req, res) => {
+  const { id } = req.params;
+  const task = tasks.find((t) => t.id === parseInt(id));
+  if (!task) {
+    return res.status(404).json({ error: 'Task not found' });
   }
   res.json(task);
 });
