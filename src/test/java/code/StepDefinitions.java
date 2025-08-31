@@ -10,49 +10,70 @@ import static org.assertj.core.api.Assertions.assertThat;
 import code.hooks.BrowserHooks;
 
 public class StepDefinitions {
+    @When("the user adds a new task {string} with details {string}")
+    public void userAddsTaskWithDetails(String task, String details) {
+        WebDriver driver = BrowserHooks.driver.get();
+        WebElement input = driver.findElement(By.id("task-input"));
+        WebElement detailsInput = driver.findElement(By.id("task-detail-input"));
+        WebElement button = driver.findElement(By.cssSelector("#task-form button[type='submit']"));
+        input.clear();
+        input.sendKeys(task);
+        detailsInput.clear();
+        detailsInput.sendKeys(details);
+        button.click();
+        try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+    }
+
     @When("the user views the details of the task {string}")
     public void userViewsTaskDetails(String task) {
         WebDriver driver = BrowserHooks.driver.get();
-        WebElement taskList = driver.findElement(By.id("task-list"));
-        for (WebElement item : taskList.findElements(By.tagName("li"))) {
-            if (item.getText().contains(task)) {
-                WebElement titleSpan = item.findElement(By.xpath(".//span[contains(text(), '" + task + "')]"));
-                titleSpan.click();
-                break;
-            }
-        }
+        WebElement titleSpan = driver.findElement(By.xpath(".//span[contains(text(), '" + task + "')]"));
+        titleSpan.click();
         try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
     }
 
-    @Then("the task details should be displayed")
-    public void taskDetailsShouldBeDisplayed() throws InterruptedException {
+    @Then("the task details for {string} should be displayed with {string}")
+    public void taskDetailsShouldBeDisplayed(String taskName, String details) throws InterruptedException {
         WebDriver driver = BrowserHooks.driver.get();
-        WebElement detailDiv = driver.findElement(By.id("task-detail-view"));
+        WebElement detailDiv = driver.findElement(By.xpath(".//span[contains(text(), '" + taskName + "')]//parent::td//parent::tr//following-sibling::tr//td[@data-test='detail-row']"));
         Thread.sleep(10000);
-        int retries = 10;
-        while (retries-- > 0 && !detailDiv.isDisplayed()) {
-            try { Thread.sleep(200); } catch (InterruptedException ignored) {}
-        }
         assertThat(detailDiv.isDisplayed()).isTrue();
-        assertThat(detailDiv.getText()).contains("Task Details");
+        assertThat(detailDiv.getText()).contains(details);
     }
     @When("the user has completed the task {string}")
     public void userHasCompletedTask(String task) throws InterruptedException {
-        userAddsTask(task);
-        the_user_marks_the_task_as_completed(task);
+        WebDriver driver = BrowserHooks.driver.get();
+        WebElement input = driver.findElement(By.id("task-input"));
+        WebElement button = driver.findElement(By.cssSelector("#task-form button[type='submit']"));
+        input.clear();
+        input.sendKeys(task);
+        button.click();
+        Thread.sleep(500);
+        // Mark as completed
+        WebElement completeButton = driver.findElement(By.xpath(".//span[contains(text(), '" + task + "')]//parent::td//following-sibling::td//button[@data-test-id='status']"));
+        completeButton.click();
+        Thread.sleep(500);
     }
 
     @When("the user has an incomplete task {string}")
-    public void userHasIncompleteTask(String task) {
-        userAddsTask(task);
+    public void userHasIncompleteTask(String task) throws InterruptedException {
+        WebDriver driver = BrowserHooks.driver.get();
+        WebElement input = driver.findElement(By.id("task-input"));
+        WebElement button = driver.findElement(By.cssSelector("#task-form button[type='submit']"));
+        input.clear();
+        input.sendKeys(task);
+        button.click();
+        Thread.sleep(500);
+        // Do not mark as completed
     }
 
     @When("the user filters to show only completed tasks")
-    public void userFiltersToShowOnlyCompletedTasks() {
+    public void userFiltersToShowOnlyCompletedTasks() throws InterruptedException {
         WebDriver driver = BrowserHooks.driver.get();
-        WebElement completedBtn = driver.findElement(By.xpath("//button[contains(text(), 'Completed')]"));
-        completedBtn.click();
-        try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+        WebElement filterDropdown = driver.findElement(By.id("filter-dropdown"));
+        filterDropdown.click();
+        filterDropdown.findElement(By.xpath(".//option[@value='completed']")).click();
+        Thread.sleep(1000);
     }
     @When("the user adds tasks {string}, {string}, and {string}")
     public void userAddsMultipleTasks(String t1, String t2, String t3) {
@@ -82,23 +103,17 @@ public class StepDefinitions {
     @When("the user edits the task {string} to {string}")
     public void userEditsTask(String oldName, String newName) throws InterruptedException {
         WebDriver driver = BrowserHooks.driver.get();
-        WebElement taskList = driver.findElement(By.id("task-list"));
-        System.out.println("Task List Items:" + taskList.findElements(By.tagName("li")).size());
-        for (WebElement item : taskList.findElements(By.tagName("li"))) {
-            if (item.getText().contains(oldName)) {
-                // Find the Edit button (assume third button)
-                WebElement editButton = item.findElement(By.xpath(".//span[contains(text(), '" + oldName + "')]/following-sibling::button[contains(text(), 'Edit')]"));
-                editButton.click();
-                // Find the input field and set new value
-                WebElement input = item.findElement(By.xpath(".//span[contains(text(), '" + oldName + "')]/following-sibling::span//input[@type='text']"));
-                input.clear();
-                input.sendKeys(newName);
-                // Find the Save button and click
-                WebElement saveButton = item.findElement(By.xpath("//button[contains(text(), 'Save')]"));
-                saveButton.click();
-            }
-            try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
-        }
+        // Find the Edit button (assume third button)
+        Thread.sleep(10000);
+        WebElement editButton = driver.findElement(By.xpath(".//span[contains(text(), '" + oldName + "')]//parent::td//following-sibling::td//button[@data-test-id=\"edit-task\"]"));
+        editButton.click();
+        // Find the input field and set new value        
+        WebElement input = driver.findElement(By.xpath(".//span[contains(text(), '" + oldName + "')]/following-sibling::span//input[@type='text']"));
+        input.clear();
+        input.sendKeys(newName);
+        // Find the Save button and click
+        WebElement saveButton = driver.findElement(By.xpath("//button[contains(text(), 'Save')]"));
+        saveButton.click();
     }
 
     @Given("local data is cleared before launch")

@@ -20,7 +20,7 @@ public class BrowserHooks {
         String os = System.getProperty("os.name").toLowerCase();
         boolean isCI = System.getenv("CI") != null;
         String browser = System.getProperty("browser", "chrome");
-        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "true"));
+        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
 
         // Add browser label to Allure report
         Allure.label("browser", browser);
