@@ -3,8 +3,8 @@
 
 # Start test-platform server
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$SCRIPT_DIR/test-platform" || exit 1
-npm start &
+cd "$SCRIPT_DIR/test-platform/submodules/sample-app" || exit 1
+npm i && npm start &
 PLATFORM_PID=$!
 
 # Wait for the server to start

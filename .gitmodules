@@ -1,0 +1,3 @@
+[submodule "test-platform/submodules/sample-app"]
+	path = test-platform/submodules/sample-app
+	url = https://github.com/sayan0610/sample-app.git
