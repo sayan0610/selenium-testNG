@@ -8,7 +8,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import static org.assertj.core.api.Assertions.assertThat;
 import code.hooks.BrowserHooks;
-import java.util.List;
 
 public class StepDefinitions {
     @When("the user views the details of the task {string}")

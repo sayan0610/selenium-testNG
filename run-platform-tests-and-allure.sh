@@ -3,9 +3,6 @@
 
 # Start test-platform server
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ls -la
-cd "$SCRIPT_DIR"
-ls -la
 cd "$SCRIPT_DIR/sample-app" || exit 1
 npm i && npm start &
 PLATFORM_PID=$!
@@ -21,7 +18,7 @@ mvn -Dtest=code.ParallelBrowserTestLauncherTestNG test
 
 # Generate Allure report using CLI
 if command -v allure >/dev/null 2>&1; then
-  allure generate ./allure-results/* --clean -o ./allure-report
+  allure generate ./allure-results/ --clean -o ./allure-report
 else
   echo "Allure CLI not found. Install with: brew install allure"
 fi
