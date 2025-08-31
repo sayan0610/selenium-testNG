@@ -3,9 +3,6 @@
 
 # Start test-platform server
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ls -la
-cd "$SCRIPT_DIR/test-platform"
-ls -la
 cd "$SCRIPT_DIR/test-platform/submodules/sample-app" || exit 1
 npm i && npm start &
 PLATFORM_PID=$!
