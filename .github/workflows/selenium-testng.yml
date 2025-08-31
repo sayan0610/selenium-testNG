@@ -37,11 +37,6 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install npm dependencies for test-platform
-        run: |
-          cd test-platform
-          npm install
-
       - name: Install Allure CLI
         run: |
           sudo apt-get update
