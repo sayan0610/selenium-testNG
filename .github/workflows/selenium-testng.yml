@@ -61,13 +61,6 @@ jobs:
         with:
           name: allure-report
           path: allure-report/
-
-      - name: Archive test reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: surefire-reports
-          path: target/surefire-reports/
       
       - name: Print Allure Report Download Link
         if: always()

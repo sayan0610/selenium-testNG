@@ -4,12 +4,22 @@ public class ParallelBrowserTestLauncher {
     public static void main(String[] args) throws Exception {
         String[] browsers = {"chrome", "firefox", "edge", "safari"};
         Process[] processes = new Process[browsers.length];
+        System.out.println("Starting parallel tests for browsers: ");
         for (int i = 0; i < browsers.length; i++) {
             String browser = browsers[i];
             ProcessBuilder pb = new ProcessBuilder(
                 "mvn", "test", "-Dbrowser=" + browser,
+                "-Dbrowser.headless=true",
                 "-Dsurefire.suiteXmlFiles=testng.xml",
-                "-Dallure.results.directory=allure-results/" + browser
+                "-Dallure.results.directory=allure-results/" + browser,
+                "-Dbrowser.fullscreen=true",
+                "-Dbrowser.clearCache=true",
+                "-Dbrowser.clearCookies=true",
+                "-Dbrowser.disableNotifications=true",
+                "-Dbrowser.disableExtensions=true",
+                "-Dbrowser.incognito=true",
+                "-Dbrowser.disablePopups=true",
+                "-Dbrowser.acceptInsecureCerts=true"
             );
             pb.inheritIO(); // Show output in console
             processes[i] = pb.start();

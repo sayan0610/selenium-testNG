@@ -16,13 +16,6 @@ cd "$SCRIPT_DIR"
 
 mvn -Dtest=code.ParallelBrowserTestLauncherTestNG test
 
-# Generate Allure report using CLI
-if command -v allure >/dev/null 2>&1; then
-  allure generate ./allure-results/ --clean -o ./allure-report
-else
-  echo "Allure CLI not found. Install with: brew install allure"
-fi
-
 # Kill the test-platform server
 kill $PLATFORM_PID
 
