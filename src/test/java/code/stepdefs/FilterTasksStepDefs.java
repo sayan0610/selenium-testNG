@@ -3,7 +3,6 @@ package code.stepdefs;
 import io.cucumber.java.en.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import static org.assertj.core.api.Assertions.assertThat;
 import code.hooks.BrowserHooks;
 import code.locators.Locators;
 

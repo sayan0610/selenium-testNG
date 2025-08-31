@@ -30,12 +30,12 @@ public class ViewTaskDetailsStepDefs {
         Thread.sleep(500);
     }
 
-    @Then("the task details for {string} should be displayed")
-    public void taskDetailsShouldBeDisplayed(String taskName) throws InterruptedException {
+    @Then("the task details for {string} should be displayed with {string}")
+    public void the_task_details_for_should_be_displayed_with(String taskName, String details) throws InterruptedException {
         WebDriver driver = BrowserHooks.driver.get();
-        WebElement detailDiv = driver.findElement(Locators.getTaskDetailRow(taskName));
+        WebElement detailDiv = driver.findElement(code.locators.Locators.getTaskDetailRow(taskName));
         Thread.sleep(1000);
         assertThat(detailDiv.isDisplayed()).isTrue();
-        assertThat(detailDiv.getText()).contains("Task Details");
+        assertThat(detailDiv.getText()).contains(details);
     }
 }

@@ -65,12 +65,4 @@ public class OtherStepDefs {
         assertThat(header.isDisplayed()).isTrue();
     }
 
-    @Then("the task details for {string} should be displayed with {string}")
-    public void the_task_details_for_should_be_displayed_with(String taskName, String details) throws InterruptedException {
-        WebDriver driver = BrowserHooks.driver.get();
-    WebElement detailDiv = driver.findElement(code.locators.Locators.getTaskDetailRow(taskName));
-        Thread.sleep(1000);
-        assertThat(detailDiv.isDisplayed()).isTrue();
-        assertThat(detailDiv.getText()).contains(details);
-    }
 }
